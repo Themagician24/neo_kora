@@ -1,9 +1,11 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
 
-/* @theme inline {
+@theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -41,7 +43,7 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-} */
+}
 :root {
   --radius: 0.5rem;
   --background: oklch(1 0 0);
@@ -111,12 +113,63 @@
   --sidebar-ring: oklch(0.554 0.135 66.442);
 }
 
-
 @layer base {
+  /* Applique une bordure légère à tous les éléments pour une séparation douce */
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
+
+  /* Style de base du corps de la page */
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+  }
+}
+
+@layer utilities {
+  /* Espacement vertical pour les paragraphes dans .web-page-content */
+  .web-page-content p {
+    @apply py-3 text-lg leading-relaxed;
+  }
+
+  /* Liens en surbrillance avec une couleur dynamique et effet de survol */
+  .highlight-link a,
+  a.highlight-link {
+    @apply text-sky-700 hover:text-orange-700 hover:underline transition duration-200 ease-in-out;
+  }
+
+  /* Bouton d'en-tête avec un bord transparent et effets de survol */
+  .header-button {
+    @apply cursor-pointer p-2 border border-transparent hover:border-white rounded-[4px] transition duration-300 ease-in-out transform hover:scale-105;
+  }
+
+  /* Bouton d'élément avec un fond qui change au survol */
+  .item-button {
+    @apply p-4 hover:bg-muted hover:no-underline transition duration-200 ease-in-out transform hover:scale-105;
+  }
+
+  /* Titre principal avec une taille de police dynamique */
+  .h1-bold {
+    @apply font-bold text-3xl lg:text-4xl text-primary-foreground leading-tight;
+  }
+
+  /* Titre secondaire avec taille ajustée */
+  .h2-bold {
+    @apply font-semibold text-xl lg:text-2xl text-secondary-foreground leading-snug;
+  }
+
+  /* Flex container avec une séparation fluide et une disposition uniforme */
+  .flex-between {
+    @apply flex justify-between items-center space-x-6;
+  }
+
+  /* Effet de focus pour les éléments interactifs */
+  .header-button:focus,
+  .item-button:focus {
+    @apply ring-2 ring-primary-foreground focus:outline-none;
+  }
+
+  /* Amélioration des liens de navigation */
+  .nav-link {
+    @apply text-primary-foreground hover:text-accent-foreground transition duration-300 ease-in-out;
   }
 }
