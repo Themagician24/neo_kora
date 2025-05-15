@@ -32,7 +32,7 @@ export default async  function Search() {
                      placeholder={`Search Site ${APP_NAME}`}
                      name="q"
                      type="search"
-                     /* autoComplete="on" */
+                      autoComplete="on" 
                      />
 
                      <button
