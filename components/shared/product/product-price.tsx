@@ -22,13 +22,13 @@ const ProductPrice = ({
      const stringValue = price.toString()
      const [intValue, floatValue ] = stringValue.includes('.')?
       stringValue.split('.') 
-      : [stringValue, ' ']
+      : [stringValue, '']
 
 
       return plain? (
           formatCurrency(price)
       ) : listPrice === 0 ? (
-          <div className={cn('text-3xl')}>
+          <div className={cn('text-3xl', className)}>
                <span className="text-xs align-super">€</span>
                {intValue}
                <span className="text-xs align-super">.{floatValue}</span>
@@ -57,11 +57,11 @@ const ProductPrice = ({
       ) : (
           <div className="">
                <div className="flex justify-center gap-3">
-                    <div className="text-3xl text-orange-700">-{discountPercent}%</div>
+                    <div className="text-3xl text-orange-700"> -{discountPercent}% </div>
                     <div className={cn("text-3xl", className)}>
-                         <span className="text-xs align-super">€</span>
+                         <span className="text-xs align-super"> € </span>
                          {intValue}
-                         <div className="text-xs align-super">{floatValue}</div>
+                         <div className="text-xs align-super"> {floatValue} </div>
                     </div>
                </div>
 

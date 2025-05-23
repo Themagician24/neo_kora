@@ -62,6 +62,11 @@ const productSchema = new Schema<Iproduct>(
       required: true,
       default: 0,
     },
+    numReviews: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
     ratingDistribution: [
       {
         rating: {
@@ -93,8 +98,8 @@ const productSchema = new Schema<Iproduct>(
   }
 )
 
-// ✅ Vérifie si le modèle existe déjà pour éviter OverwriteModelError
-const Product: Model<Iproduct> =
-  models.Product || model<Iproduct>('Product', productSchema)
+const Product =
+  (models.Product as Model<Iproduct>) ||
+  model<Iproduct>('Product', productSchema)
 
 export default Product

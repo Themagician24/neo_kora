@@ -11,7 +11,6 @@ import {
 import ProductCard from './product-card'
 import { Iproduct } from '@/lib/db/models/product.model'
 
-
 export default function ProductSlider({
   title,
   products,

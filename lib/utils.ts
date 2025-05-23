@@ -46,7 +46,7 @@ export const toSlug = (text: string): string =>
     .replace(/^-+|-+$/g, '')
     .replace(/-+/g, '-')
 
- const CURRENCY_FORMATTER = new Intl.NumberFormat('fr-FR', {
+ const CURRENCY_FORMATTER = new Intl.NumberFormat('en-US', {
   currency: 'EUR',
    style: 'currency',
    minimumFractionDigits: 2,
@@ -55,16 +55,16 @@ export const toSlug = (text: string): string =>
    return CURRENCY_FORMATTER.format(amount)
  }
 
- const NUMBER_FORMATTER = new Intl.NumberFormat('fr-FR')
+ const NUMBER_FORMATTER = new Intl.NumberFormat('en-US')
  export function formatNumber(number: number) {
    return NUMBER_FORMATTER.format(number)
  }
 
-// export const round2 = (num: number) =>
-//   Math.round((num + Number.EPSILON) * 100) / 100
+ export const round2 = (num: number) =>
+   Math.round((num + Number.EPSILON) * 100) / 100
 
-// export const generateId = () =>
-//   Array.from({ length: 24 }, () => Math.floor(Math.random() * 10)).join('')
+ export const generateId = () =>
+  Array.from({ length: 24 }, () => Math.floor(Math.random() * 10)).join('')
 
 // // eslint-disable-next-line @typescript-eslint/no-explicit-any
 // export const formatError = (error: any): string => {
