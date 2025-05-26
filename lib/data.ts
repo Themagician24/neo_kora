@@ -60,7 +60,7 @@ const products: IproductInput[] = [
          'Made with sustainably sourced USA grown cotton; Shoulder-to-shoulder tape; double-needle coverstitched front neck; Set-in sleeves; Rib cuffs with concealed seams; Seamless body for a wide printing area',
    
        sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-       colors: ['Yellow', 'Red', 'Black'],
+       colors: ['Yellow', 'Red', 'Black', 'Blue', 'White', 'Green', 'Grey', 'Orange'],
    
        reviews: [],
      },
@@ -712,11 +712,11 @@ const data: Data = {
      headerMenus: [
           {
                name: "Today's Deal",
-               href:"/search?tag=today's deal",
+               href:"/search?tag=todays-deal",
           },
           {
                name: "New Arrivals",
-               href:"/search?tag=new-arrivals",
+               href:"/search?tag=new-arrival",
           },
           {
                name: "Featured Products",
@@ -724,7 +724,7 @@ const data: Data = {
           },
           {
                name: "Best Sellers",
-               href:"/search?tag=best-sellers",
+               href:"/search?tag=best-seller",
               
           },
           {

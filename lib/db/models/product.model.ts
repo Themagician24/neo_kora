@@ -51,7 +51,8 @@ const productSchema = new Schema<Iproduct>(
     },
     colors: {
       type: [String],
-      default: ['white', 'black', 'blue', 'red', 'green', 'yellow', 'gray'],
+      default: ['white', 'black',
+         'blue', 'red', 'green', 'yellow', 'gray, orange, purple'],
     },
     sizes: {
       type: [String],
