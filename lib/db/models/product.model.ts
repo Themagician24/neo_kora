@@ -1,15 +1,13 @@
-import { IproductInput } from "@/types"
-import { Document, model, models, Schema, Model } from "mongoose"
+import { Document, Model, model, models, Schema } from 'mongoose'
+import { IProductInput } from '@/types'
 
-// L’interface du document MongoDB pour le produit
-export interface Iproduct extends Document, IproductInput {
+export interface IProduct extends Document, IProductInput {
   _id: string
   createdAt: Date
   updatedAt: Date
 }
 
-// Le schéma Mongoose du produit
-const productSchema = new Schema<Iproduct>(
+const productSchema = new Schema<IProduct>(
   {
     name: {
       type: String,
@@ -31,7 +29,7 @@ const productSchema = new Schema<Iproduct>(
     },
     description: {
       type: String,
-      required: true,
+      trim: true,
     },
     price: {
       type: Number,
@@ -45,19 +43,9 @@ const productSchema = new Schema<Iproduct>(
       type: Number,
       required: true,
     },
-    tags: {
-      type: [String],
-      default: ['new arrivals'],
-    },
-    colors: {
-      type: [String],
-      default: ['white', 'black',
-         'blue', 'red', 'green', 'yellow', 'gray, orange, purple'],
-    },
-    sizes: {
-      type: [String],
-      default: ['s', 'm', 'l', 'xl', 'xxl', 'xxxl'],
-    },
+    tags: { type: [String], default: ['new arrival'] },
+    colors: { type: [String], default: ['White', 'Red', 'Black'] },
+    sizes: { type: [String], default: ['S', 'M', 'L'] },
     avgRating: {
       type: Number,
       required: true,
@@ -71,6 +59,10 @@ const productSchema = new Schema<Iproduct>(
     ratingDistribution: [
       {
         rating: {
+          type: Number,
+          required: true,
+        },
+        count: {
           type: Number,
           required: true,
         },
@@ -100,7 +92,7 @@ const productSchema = new Schema<Iproduct>(
 )
 
 const Product =
-  (models.Product as Model<Iproduct>) ||
-  model<Iproduct>('Product', productSchema)
+  (models.Product as Model<IProduct>) ||
+  model<IProduct>('Product', productSchema)
 
 export default Product

@@ -4,20 +4,21 @@ import ProductSlider from "@/components/shared/product/product-slider"
 import Rating from "@/components/shared/product/rating"
 import SelectVariant from "@/components/shared/product/select-variant"
 import { Card, CardContent } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
 import { getProductBySlug, getRelatedProductsByCategory } from "@/lib/actions/product.actions"
+import { Separator } from "@radix-ui/react-select"
 
-
-// Metadata for SEO
-export async function generateMetadata( props : {
-   params: Promise<{ slug: string}> 
-  }) {
-  
-  const params = await props.params;
-  const product = await getProductBySlug(params.slug);
+// Génère les métadonnées SEO pour la page produit
+export async function generateMetadata(props: {
+  params: Promise<{ slug: string }>
+}) {
+  const params = await props.params
+  const product = await getProductBySlug(params.slug)
 
   if (!product) {
-    return { title: 'Product not found' }
+    return {
+      title: 'Product not found',
+      description: 'The product you are looking for does not exist.',
+    }
   }
 
   return {
@@ -26,47 +27,54 @@ export async function generateMetadata( props : {
   }
 }
 
-// Page de détails du produit
+// Page principale des détails du produit
 export default async function ProductDetails(props: {
   params: Promise<{ slug: string }>
-  searchParams: Promise<{page: string; size: string; color: string}>
+  searchParams: Promise<{ page: string; color: string; size: string }>
 }) {
-  const searchParams = await props.searchParams;
-  const {page, color, size} = searchParams;
-  const params = await props.params;
-  const { slug } = params;
-  const product = await getProductBySlug(slug);
+  // Récupération des paramètres d'URL
+  const searchParams = await props.searchParams
+  const { page, color, size } = searchParams
 
+  const params = await props.params
+  const { slug } = params
+
+  // Récupération des données du produit
+  const product = await getProductBySlug(slug)
   
-
+  // Récupération des produits similaires
   const relatedProducts = await getRelatedProductsByCategory({
     category: product.category,
     productId: product._id,
-   page: Number(page || '1'),
+    page: Number(page || 1),
   })
 
   return (
     <div>
+      {/* Section principale du produit */}
       <section>
         <div className="grid grid-cols-1 md:grid-cols-5">
+          {/* Colonne gauche : Galerie d'images */}
           <div className="col-span-2">
             <ProductGallery images={product.images} />
           </div>
 
+          {/* Colonne centrale : Détails du produit */}
           <div className="flex w-full flex-col gap-2 md:p-5 col-span-2">
+            {/* En-tête avec marque, nom et rating */}
             <div className="flex flex-col gap-3">
-              <p className="p-medium-16 rounded-full bg-grey-500/10 text-grey-700">
+              <p className="p-medium-16 rounded-full bg-grey-500/10 text-grey-500">
                 Brand {product.brand} {product.category}
               </p>
-
               <h1 className="font-bold text-lg lg:text-xl">{product.name}</h1>
               <span>{product.avgRating.toFixed(1)}</span>
               <Rating rating={product.avgRating} />
-              <span>({product.numReviews} reviews)</span>
+              <span>{product.numReviews}</span>
             </div>
 
             <Separator />
 
+            {/* Section prix */}
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <div className="flex gap-3">
                 <ProductPrice
@@ -77,45 +85,51 @@ export default async function ProductDetails(props: {
                 />
               </div>
             </div>
+
+            {/* Sélecteur de variantes (couleur/taille) */}
+            <div>
+              <SelectVariant
+                product={product}
+                size={size || product.sizes[0]}
+                color={color || product.colors[0]}
+              />
+            </div>
+
+            <Separator className="my-2" />
+
+            {/* Description du produit */}
+            <div className="flex flex-col gap-2">
+              <p className="p-bold-20 text-grey-600">Description:</p>
+              <p className="p-medium-16 lg:p-regular-18">{product.description}</p>
+            </div>
           </div>
 
+          {/* Colonne droite : Achat (prix + stock) */}
           <div>
-            <SelectVariant
-              product={product}
-              size={size || product.sizes[0]}
-              color={color || product.colors[0]}
-            />
+            <Card>
+              <CardContent className="p-4 flex flex-col gap-4">
+                <ProductPrice price={product.price} />
+
+                {/* Alertes de stock */}
+                {product.countInStock > 0 && product.countInStock <= 3 && (
+                  <div className="text-destructive font-bold">
+                    {`Only ${product.countInStock} left in stock! - order soon!`}
+                  </div>
+                )}
+
+                {product.countInStock !== 0 ? (
+                  <div className="text-green-700 text-xl">In Stock</div>
+                ) : (
+                  <div className="text-destructive text-xl">Out of Stock</div>
+                )}
+              </CardContent>
+            </Card>
           </div>
-
-          <Separator className="my-2" />
-          <div className="flex flex-col gap-2">
-            <p className="p-bold-20 text-grey-700">Description</p>
-            <p className="p-medium-16 lg:p-regular-18">{product.description}</p>
-          </div>
-        </div>
-
-        <div>
-          <Card>
-            <CardContent className="p-4 flex flex-col gap-4">
-              <ProductPrice price={product.price} />
-
-              {product.countInStock > 0 && product.countInStock <= 3 && (
-                <div className="text-destructive font-bold">
-                  {`Only ${product.countInStock} left in stock - order soon`}
-                </div>
-              )}
-
-              {product.countInStock !== 0 ? (
-                <div className="text-green-700 text-xl">In stock</div>
-              ) : (
-                <div className="text-destructive text-xl">Out of stock</div>
-              )}
-            </CardContent>
-          </Card>
         </div>
       </section>
 
-      <section className="mt-10">
+      {/* Section des produits similaires */}
+      <section className="my-10">
         <ProductSlider
           products={relatedProducts.data}
           title={`Best Sellers in ${product.category}`}
