@@ -9,7 +9,7 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel'
 import ProductCard from './product-card'
-import { Iproduct } from '@/lib/db/models/product.model'
+import { IProduct } from '@/lib/db/models/product.model'
 
 export default function ProductSlider({
   title,
@@ -17,7 +17,7 @@ export default function ProductSlider({
   hideDetails = false,
 }: {
   title?: string
-  products: Iproduct[]
+  products: IProduct[]
   hideDetails?: boolean
 }) {
   return (

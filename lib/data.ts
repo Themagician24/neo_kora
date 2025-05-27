@@ -1,7 +1,7 @@
-import {Data, IproductInput } from "@/types";
+import {Data, IProductInput } from "@/types";
 import { toSlug } from "./utils";
 
-const products: IproductInput[] = [
+const products: IProductInput[] = [
      {
        name: 'Nike Mens Slim-fit Long-Sleeve T-Shirt',
        slug: toSlug('Nike Mens Slim-fit Long-Sleeve T-Shirt'),
@@ -707,8 +707,10 @@ const products: IproductInput[] = [
      },
    ]
 
-const data: Data = {
+const data:
+ Data = {
      products,
+     reviews: [],
      headerMenus: [
           {
                name: "Today's Deal",
