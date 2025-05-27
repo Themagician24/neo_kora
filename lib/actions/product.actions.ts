@@ -1,8 +1,9 @@
 'use server'
 
 import { connectToDatabase } from "@/lib/db"
-import Product, { Iproduct } from "../db/models/product.model"
+
 import { PAGE_SIZE } from "../constants"
+import Product, { IProduct } from '@/lib/db/models/product.model'
 
 export async function getAllCategories() {
      await connectToDatabase()
@@ -51,7 +52,7 @@ export async function getProductsByTag({
      })
        .sort({ createdAt: 'desc' })
        .limit(limit)
-     return JSON.parse(JSON.stringify(products)) as Iproduct[]
+     return JSON.parse(JSON.stringify(products)) as IProduct[]
    }
 
 
@@ -60,7 +61,7 @@ export async function getProductBySlug(slug: string) {
      await connectToDatabase()
      const product = await Product.findOne({ slug, isPublished: true })
      if (!product) throw new Error('Product not found')
-     return JSON.parse(JSON.stringify(product)) as Iproduct
+     return JSON.parse(JSON.stringify(product)) as IProduct
    }
 
 //GET  RELATED PRODUCTS: PRODUCTS WITH SAME CATEGORY
@@ -90,7 +91,7 @@ export async function getRelatedProductsByCategory({
           .sort({ numSales: 'desc' })
           const productsCount = await Product.countDocuments(conditions)
      return {
-          data: JSON.parse(JSON.stringify(products)) as Iproduct[],
+          data: JSON.parse(JSON.stringify(products)) as IProduct[],
           totalPages: Math.ceil(productsCount / limit),
      }
 }
