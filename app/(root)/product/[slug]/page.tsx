@@ -41,14 +41,14 @@ export default async function ProductDetails(props: {
       <AddToBrowsingHistory id={product._id} category={product.category} />
 
       <section>
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5">
           {/* Galerie produit */}
           <div className="col-span-2">
             <ProductGallery images={product.images} />
           </div>
 
           {/* Informations produit */}
-          <div className="flex w-full flex-col gap-4 col-span-2 md:p-5">
+          <div className="flex w-full flex-col gap-2 md:p-5 col-span-2">
             <div className="flex flex-col gap-3">
               <p className="p-medium-16 rounded-full bg-gray-100 text-gray-600 px-3 py-1">
                 {product.brand} • {product.category}
