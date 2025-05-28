@@ -1,5 +1,180 @@
-import {Data, IProductInput } from "@/types";
+import {Data, IProductInput, IUserInput } from "@/types";
 import { toSlug } from "./utils";
+import bcrypt from 'bcryptjs'
+
+
+const users: IUserInput[] = [
+  {
+    name: 'Lucas',
+    email: 'lucas@example.com',
+    password: bcrypt.hashSync('123456', 5),
+    role: 'Admin',
+    address: {
+      fullName: 'Lucas Dupont',
+      street: '12 Rue de Rivoli',
+      city: 'Paris',
+      province: 'Île-de-France',
+      postalCode: '75001',
+      country: 'France',
+      phone: '06-12-34-56-78',
+    },
+    paymentMethod: 'Stripe',
+    emailVerified: false,
+  },
+  {
+    name: 'Emma',
+    email: 'emma@example.com',
+    password: bcrypt.hashSync('123456', 5),
+    role: 'User',
+    address: {
+      fullName: 'Emma Moreau',
+      street: '8 Avenue des Champs-Élysées',
+      city: 'Paris',
+      province: 'Île-de-France',
+      postalCode: '75008',
+      country: 'France',
+      phone: '06-87-65-43-21',
+    },
+    paymentMethod: 'PayPal',
+    emailVerified: false,
+  },
+  {
+    name: 'Léo',
+    email: 'leo@example.com',
+    password: bcrypt.hashSync('123456', 5),
+    role: 'User',
+    address: {
+      fullName: 'Léo Girard',
+      street: '15 Rue Victor Hugo',
+      city: 'Lyon',
+      province: 'Auvergne-Rhône-Alpes',
+      postalCode: '69002',
+      country: 'France',
+      phone: '07-98-76-54-32',
+    },
+    paymentMethod: 'Cash On Delivery',
+    emailVerified: false,
+  },
+  {
+    name: 'Chloé',
+    email: 'chloe@example.com',
+    password: bcrypt.hashSync('123456', 5),
+    role: 'User',
+    address: {
+      fullName: 'Chloé Lemoine',
+      street: '22 Rue de la République',
+      city: 'Marseille',
+      province: 'Provence-Alpes-Côte d\'Azur',
+      postalCode: '13001',
+      country: 'France',
+      phone: '06-22-33-44-55',
+    },
+    paymentMethod: 'Stripe',
+    emailVerified: false,
+  },
+  {
+    name: 'Nathan',
+    email: 'nathan@example.com',
+    password: bcrypt.hashSync('123456', 5),
+    role: 'User',
+    address: {
+      fullName: 'Nathan Perrin',
+      street: '5 Boulevard Carnot',
+      city: 'Toulouse',
+      province: 'Occitanie',
+      postalCode: '31000',
+      country: 'France',
+      phone: '07-11-22-33-44',
+    },
+    paymentMethod: 'PayPal',
+    emailVerified: false,
+  },
+  {
+    name: 'Manon',
+    email: 'manon@example.com',
+    password: bcrypt.hashSync('123456', 5),
+    role: 'User',
+    address: {
+      fullName: 'Manon Roux',
+      street: '17 Rue Nationale',
+      city: 'Lille',
+      province: 'Hauts-de-France',
+      postalCode: '59000',
+      country: 'France',
+      phone: '06-55-66-77-88',
+    },
+    paymentMethod: 'Stripe',
+    emailVerified: false,
+  },
+  {
+    name: 'Hugo',
+    email: 'hugo@example.com',
+    password: bcrypt.hashSync('123456', 5),
+    role: 'User',
+    address: {
+      fullName: 'Hugo Blanc',
+      street: '29 Rue Alsace Lorraine',
+      city: 'Strasbourg',
+      province: 'Grand Est',
+      postalCode: '67000',
+      country: 'France',
+      phone: '06-33-44-55-66',
+    },
+    paymentMethod: 'Cash On Delivery',
+    emailVerified: false,
+  },
+  {
+    name: 'Camille',
+    email: 'camille@example.com',
+    password: bcrypt.hashSync('123456', 5),
+    role: 'User',
+    address: {
+      fullName: 'Camille Garnier',
+      street: '33 Rue du Port',
+      city: 'Nantes',
+      province: 'Pays de la Loire',
+      postalCode: '44000',
+      country: 'France',
+      phone: '07-44-55-66-77',
+    },
+    paymentMethod: 'PayPal',
+    emailVerified: false,
+  },
+  {
+    name: 'Enzo',
+    email: 'enzo@example.com',
+    password: bcrypt.hashSync('123456', 5),
+    role: 'User',
+    address: {
+      fullName: 'Enzo Chevalier',
+      street: '66 Rue Lafayette',
+      city: 'Bordeaux',
+      province: 'Nouvelle-Aquitaine',
+      postalCode: '33000',
+      country: 'France',
+      phone: '06-99-88-77-66',
+    },
+    paymentMethod: 'Stripe',
+    emailVerified: false,
+  },
+  {
+    name: 'Léa',
+    email: 'lea@example.com',
+    password: bcrypt.hashSync('123456', 5),
+    role: 'User',
+    address: {
+      fullName: 'Léa Moulin',
+      street: '40 Rue Jean Jaurès',
+      city: 'Nice',
+      province: 'Provence-Alpes-Côte d\'Azur',
+      postalCode: '06000',
+      country: 'France',
+      phone: '06-00-11-22-33',
+    },
+    paymentMethod: 'Cash On Delivery',
+    emailVerified: false,
+  },
+]
 
 const products: IProductInput[] = [
      {
@@ -709,80 +884,79 @@ const products: IProductInput[] = [
 
 const data:
  Data = {
-     products,
-     reviews: [],
-     headerMenus: [
-          {
-               name: "Today's Deal",
-               href:"/search?tag=todays-deal",
-          },
-          {
-               name: "New Arrivals",
-               href:"/search?tag=new-arrival",
-          },
-          {
-               name: "Featured Products",
-               href:"/search?tag=featured",
-          },
-          {
-               name: "Best Sellers",
-               href:"/search?tag=best-seller",
-              
-          },
-          {
-               name: "Browsing History",
-               href:"/#browsing-history",
-             
-          },
-          {
-               name: "Gift Cards",
-               href:"/search?tag=gift-cards",
-          },
-          {
-               name: "Customer Service",
-               href:"/page/customer-service",
-          },
-          {
-               name: "Contact Us",
-               href:"/page/contact-us",
-          },
-          {
-               name: "About Us",
-               href:"/page/about-us",
-          },
-          {
-               name: "Privacy Policy",
-               href:"/page/privacy-policy",
-          },
-          {
-               name: "Help",
-               href:"/page/help",
-          },
-     ],
-     carousels: [
-          {
-               title: 'Most Popular Shoes For Sale',
-               buttonCaption: 'Shop Now',
-               image: '/images/banner3.jpg',
-               url:'/search?category=Shoes',
-               isPublished: true,
-          },
-          {
-               title: 'Best Seller in T-Shirts',
-               buttonCaption: 'Shop Now',
-               image: '/images/banner1.jpg',
-               url:'/search?category=T-Shirts',
-               isPublished: true,
-          },
-          {
-               title: 'Best Deals on Wrist Watches',
-               buttonCaption: 'See More',
-               image: '/images/banner2.jpg',
-               url:'/search?category=Wrist Watches',
-               isPublished: true,
-          },
-
-     ],
-}
+  users,
+   products,
+   reviews: [],
+   headerMenus: [
+     {
+       name: "Today's Deal",
+       href: "/search?tag=todays-deal",
+     },
+     {
+       name: "New Arrivals",
+       href: "/search?tag=new-arrival",
+     },
+     {
+       name: "Featured Products",
+       href: "/search?tag=featured",
+     },
+     {
+       name: "Best Sellers",
+       href: "/search?tag=best-seller",
+     },
+     {
+       name: "Browsing History",
+       href: "/#browsing-history",
+     },
+     {
+       name: "Gift Cards",
+       href: "/search?tag=gift-cards",
+     },
+     {
+       name: "Customer Service",
+       href: "/page/customer-service",
+     },
+     {
+       name: "Contact Us",
+       href: "/page/contact-us",
+     },
+     {
+       name: "About Us",
+       href: "/page/about-us",
+     },
+     {
+       name: "Privacy Policy",
+       href: "/page/privacy-policy",
+     },
+     {
+       name: "Help",
+       href: "/page/help",
+     },
+   ],
+   carousels: [
+     {
+       title: 'Most Popular Shoes For Sale',
+       buttonCaption: 'Shop Now',
+       image: '/images/banner3.jpg',
+       url: '/search?category=Shoes',
+       isPublished: true,
+     },
+     {
+       title: 'Best Seller in T-Shirts',
+       buttonCaption: 'Shop Now',
+       image: '/images/banner1.jpg',
+       url: '/search?category=T-Shirts',
+       isPublished: true,
+     },
+     {
+       title: 'Best Deals on Wrist Watches',
+       buttonCaption: 'See More',
+       image: '/images/banner2.jpg',
+       url: '/search?category=Wrist Watches',
+       isPublished: true,
+     },
+   ],
+   
+ }
 
 export default data;

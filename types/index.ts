@@ -1,5 +1,5 @@
 
-import { CartSchema, OrderItemSchema, ProductInputSchema } from "@/lib/validator";
+import { CartSchema, OrderItemSchema, ProductInputSchema, UserInputSchema, UserSignInSchema } from "@/lib/validator";
 import { z } from "zod";
 
 // Définition du type TypeScript à partir du schéma de validation d'un produit
@@ -7,6 +7,10 @@ export type IProductInput = z.infer<typeof ProductInputSchema>
 
 // Structure de données globale utilisée probablement pour de l'affichage côté client (ex: page d'accueil, produits, carrousel, etc.)
 export type Data = {
+  
+  // Liste des utilisateurs à afficher
+  users: IUserInput[]
+
   // Liste des produits à afficher
   products: IProductInput[]
 
@@ -38,3 +42,9 @@ export type OrderItem = z.infer<typeof OrderItemSchema>
 
 // Type représentant un panier d'achat complet (liste d’articles + quantités)
 export type Cart = z.infer<typeof CartSchema>
+
+
+//USERS
+
+export type IUserInput = z.infer<typeof UserInputSchema>
+export type IUserSignIn = z.infer<typeof UserSignInSchema>
