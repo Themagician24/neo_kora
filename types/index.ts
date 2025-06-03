@@ -1,5 +1,5 @@
 
-import { CartSchema, OrderItemSchema, ProductInputSchema, UserInputSchema, UserSignInSchema, UserSignUpSchema } from "@/lib/validator";
+import { CartSchema, OrderItemSchema, ProductInputSchema, ShippingAddressSchema, UserInputSchema, UserSignInSchema, UserSignUpSchema } from "@/lib/validator";
 import { z } from "zod";
 
 // Définition du type TypeScript à partir du schéma de validation d'un produit
@@ -43,9 +43,13 @@ export type OrderItem = z.infer<typeof OrderItemSchema>
 // Type représentant un panier d'achat complet (liste d’articles + quantités)
 export type Cart = z.infer<typeof CartSchema>
 
+// Type représentant une adresse de livraison
+export type ShippingAddress = z.infer<typeof ShippingAddressSchema>
+
 
 //USERS
 
 export type IUserInput = z.infer<typeof UserInputSchema>
 export type IUserSignIn = z.infer<typeof UserSignInSchema>
 export type IUSignUp = z.infer<typeof UserSignUpSchema>
+export type ShippingAdress = z.infer<typeof ShippingAddressSchema>

@@ -10,6 +10,7 @@ import CredentialsSignInForm from './credentials-signin-form'
 
 import { Button } from '@/components/ui/button'
 import { APP_NAME } from '@/lib/constants'
+import { GoogleSignInForm } from './google-signin-form'
 
 
 
@@ -43,7 +44,7 @@ export default async function SignInPage(props: {
             <CredentialsSignInForm />
             <SeparatorWithOr />
             <div className='mt-4'>
-              {/* <GoogleSignInForm /> */}
+               <GoogleSignInForm /> 
             </div>
           </div>
         </CardContent>
