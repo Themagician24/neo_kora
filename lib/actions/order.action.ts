@@ -1,6 +1,165 @@
-import { OrderItem, ShippingAddress } from "@/types"
-import { round2 } from "../utils"
+'use server'
+
+import { Cart, OrderItem, ShippingAddress } from "@/types"
+import { formatError, round2 } from "../utils"
 import { AVALILABLE_DELIVERY_DATES } from "../constants"
+import { connectToDatabase } from "../db"
+import { auth } from "@/auth"
+import { OrderInputSchema } from "../validator"
+import Order, { IOrder } from "../db/models/order.model"
+import { paypal } from "../paypal"
+import { revalidatePath } from "next/cache"
+import { sendPurchaseReceipt } from "@/emails"
+
+
+
+
+//CREATION DE LA COMMANDE
+
+// 🔧 Fonction principale de création de commande
+export const createOrder = async (clientSideCart: Cart) => {
+     try {
+       // Connexion à la base de données
+       await connectToDatabase()
+   
+       // Vérification de la session utilisateur
+       const session = await auth()
+       if (!session || !session.user?.id) {
+         throw new Error('Utilisateur non authentifié')
+       }
+   
+       // 🔁 Création de la commande à partir du panier
+       const createdOrder = await createOrderFromCart(
+         clientSideCart,
+         session.user.id
+       )
+   
+       return {
+         success: true,
+         message: 'Order placed successfully',
+         data: { orderId: createdOrder._id.toString() },
+       }
+     } catch (error) {
+       return {
+         success: false,
+         error: formatError(error),
+       }
+     }
+   }
+   
+   // 📦 Fonction de transformation du panier client en commande persistée
+   export const createOrderFromCart = async (
+     clientSideCart: Cart,
+     userId: string
+   ) => {
+     // 🔄 Calcul des frais de livraison et date estimée
+     const cart = {
+       ...clientSideCart,
+       ...calcDeliveryDateAndPrice({
+         items: clientSideCart.items,
+         shippingAddress: clientSideCart.shippingAddress,
+         deliveryDateIndex: clientSideCart.deliveryDateIndex,
+       }),
+     }
+   
+     // ✅ Validation des données avec zod
+     const order = OrderInputSchema.parse({
+       user: userId,
+       items: cart.items,
+       shippingAddress: cart.shippingAddress,
+       paymentMethod: cart.paymentMethod,
+       itemsPrice: cart.itemsPrice,
+       shippingPrice: cart.shippingPrice,
+       taxPrice: cart.taxPrice,
+       totalPrice: cart.totalPrice,
+       expectedDeliveryDate: cart.expectedDeliveryDate,
+     })
+   
+     // 💾 Création et sauvegarde de la commande
+     return await Order.create(order)
+   }
+   export async function getOrderById(orderId: string): Promise<IOrder> {
+    await connectToDatabase()
+    const order = await Order.findById(orderId)
+    return JSON.parse(JSON.stringify(order))
+  }
+  
+  export async function createPaypalOrder(orderId: string) {
+    await connectToDatabase()
+  
+    try {
+      const order = await Order.findById(orderId)
+      if (order) {
+        const paypalOrder = await paypal.createOrder(order.totalPrice)
+        order.paymentResult = {
+          id: paypalOrder.id,
+          email_address: '',
+          status: '',
+          pricePaid: '0',
+        }
+        await order.save()
+        return {
+          success: true,
+          message: 'Paypal order created successfully',
+          data: paypalOrder.id,
+        }
+      } else {
+        throw new Error('Order not found')
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: formatError(error),
+      }
+    }
+  }
+  
+  export async function approvePayPalOrder(
+    orderId: string,
+    data: { orderId: string }
+  ) {
+    await connectToDatabase()
+    try {
+      const order = await Order.findById(orderId).populate('user', 'email')
+      if (!order) throw new Error('Order not found')
+  
+      const captureData = await paypal.capturePayment(data.orderId)
+  
+      if (
+        !captureData ||
+        captureData.id !== order.paymentResult?.id ||
+        captureData.status !== 'COMPLETED'
+      ) {
+        throw new Error('Error in PayPal payment')
+      }
+  
+      order.isPaid = true
+      order.paidAt = new Date()
+      order.paymentResult = {
+        id: captureData.id,
+        status: captureData.status,
+        email_address: captureData.payer.email_address,
+        pricePaid:
+          captureData.purchase_units[0]?.payments?.captures[0]?.amount?.value,
+      }
+  
+      await order.save()
+      await sendPurchaseReceipt({ order })
+      revalidatePath(`/account/orders/${orderId}`)
+  
+      return {
+        success: true,
+        message: 'Your Order has been successfully paid by PayPal',
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: formatError(error),
+      }
+    }
+  }
+
+   
 
 export const calcDeliveryDateAndPrice = async ({
      items,

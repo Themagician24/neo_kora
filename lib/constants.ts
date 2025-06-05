@@ -2,6 +2,11 @@
 
 export const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || "NeoKora";
 
+export const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:3000";
+
+export const SENDER_EMAIL = process.env.NEXT_PUBLIC_SENDER_EMAIL || "kinghustlerz@resend.dev";
+export const SENDER_NAME = process.env.NEXT_PUBLIC_SENDER_NAME || "NeoKora";
+
 export const APP_SLOGAN = process.env.NEXT_PUBLIC_APP_SLOGAN || "Depensez moins, vivez mieux !";
 
 export const APP_DESCRIPTION =
