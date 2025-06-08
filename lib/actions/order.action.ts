@@ -18,34 +18,24 @@ import { sendPurchaseReceipt } from "@/emails"
 
 // 🔧 Fonction principale de création de commande
 export const createOrder = async (clientSideCart: Cart) => {
-     try {
-       // Connexion à la base de données
-       await connectToDatabase()
-   
-       // Vérification de la session utilisateur
-       const session = await auth()
-       if (!session || !session.user?.id) {
-         throw new Error('Utilisateur non authentifié')
-       }
-   
-       // 🔁 Création de la commande à partir du panier
-       const createdOrder = await createOrderFromCart(
-         clientSideCart,
-         session.user.id
-       )
-   
-       return {
-         success: true,
-         message: 'Order placed successfully',
-         data: { orderId: createdOrder._id.toString() },
-       }
-     } catch (error) {
-       return {
-         success: false,
-         error: formatError(error),
-       }
-     }
-   }
+  try {
+    await connectToDatabase()
+    const session = await auth()
+    if (!session) throw new Error('User not authenticated')
+    // recalculate price and delivery date on the server
+    const createdOrder = await createOrderFromCart(
+      clientSideCart,
+      session.user.id!
+    )
+    return {
+      success: true,
+      message: 'Order placed successfully',
+      data: { orderId: createdOrder._id.toString() },
+    }
+  } catch (error) {
+    return { success: false, message: formatError(error) }
+  }
+}
    
    // 📦 Fonction de transformation du panier client en commande persistée
    export const createOrderFromCart = async (
@@ -64,15 +54,16 @@ export const createOrder = async (clientSideCart: Cart) => {
    
      // ✅ Validation des données avec zod
      const order = OrderInputSchema.parse({
-       user: userId,
-       items: cart.items,
-       shippingAddress: cart.shippingAddress,
-       paymentMethod: cart.paymentMethod,
-       itemsPrice: cart.itemsPrice,
-       shippingPrice: cart.shippingPrice,
-       taxPrice: cart.taxPrice,
-       totalPrice: cart.totalPrice,
-       expectedDeliveryDate: cart.expectedDeliveryDate,
+      user: userId,
+      items: cart.items,
+      shippingAddress: cart.shippingAddress,
+      paymentMethod: cart.paymentMethod,
+      itemsPrice: cart.itemsPrice,
+      shippingPrice: cart.shippingPrice,
+      taxPrice: cart.taxPrice,
+      totalPrice: cart.totalPrice,
+      expectedDeliveryDate: cart.expectedDeliveryDate,
+      
      })
    
      // 💾 Création et sauvegarde de la commande

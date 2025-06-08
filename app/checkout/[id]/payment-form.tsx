@@ -17,6 +17,9 @@ import { Button } from '@/components/ui/button'
 import ProductPrice from '@/components/shared/product/product-price'
 import { toast } from 'sonner'
 import { approvePayPalOrder, createPaypalOrder } from '@/lib/actions/order.action'
+import { loadStripe } from '@stripe/stripe-js'
+import { Elements } from '@stripe/react-stripe-js'
+import StripeForm from './stripe-form'
 
 // const stripePromise = loadStripe(
 //   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string
@@ -24,12 +27,12 @@ import { approvePayPalOrder, createPaypalOrder } from '@/lib/actions/order.actio
 export default function OrderDetailsForm({
   order,
   paypalClientId,
-//   clientSecret,
+   clientSecret,
 }: {
   order: IOrder
   paypalClientId: string
   isAdmin: boolean
-//   clientSecret: string | null
+   clientSecret: string | null
 }) {
   const router = useRouter()
   const {
@@ -132,6 +135,17 @@ export default function OrderDetailsForm({
                     </PayPalScriptProvider>
                </div>
             )}
+            {!isPaid && paymentMethod ===  'stripe'  && clientSecret && (
+              <Elements
+               options={{ clientSecret }}
+                stripe={stripePromise}
+              >
+                <StripeForm
+                   priceInCents={Math.round(order.totalPrice * 100)}
+                    orderId={order._id}
+                />
+              </Elements>
+            )}
 
 
 
@@ -149,6 +163,10 @@ export default function OrderDetailsForm({
         </div>
       </CardContent>
     </Card>
+  )
+
+  const stripePromise = loadStripe(
+    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string
   )
 
   return (
