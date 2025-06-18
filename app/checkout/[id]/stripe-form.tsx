@@ -1,77 +1,62 @@
-import {
-  LinkAuthenticationElement,
-  PaymentElement,
-  useElements,
-  useStripe,
-} from '@stripe/react-stripe-js'
-import { FormEvent, useState } from 'react'
+'use client'
 
+import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import ProductPrice from '@/components/shared/product/product-price'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
-import { SERVER_URL } from '@/lib/constants'
-// import useSettingStore from '@/hooks/use-setting-store'
-
-export default function StripeForm({
-  priceInCents,
-  orderId,
-}: {
+interface StripeFormProps {
   priceInCents: number
   orderId: string
-}) {
-//   const {
-//     setting: { site },
-//   } = useSettingStore()
+}
 
+export default function StripeForm({ priceInCents, orderId }: StripeFormProps) {
   const stripe = useStripe()
   const elements = useElements()
-  const [isLoading, setIsLoading] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string>()
-  const [email, setEmail] = useState<string>()
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
 
-  async function handleSubmit(e: FormEvent) {
+  // 🧠 Fonction appelée lors de la soumission du formulaire Stripe
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (stripe == null || elements == null || email == null) return
+    // 🚨 Vérifie que Stripe et Elements sont prêts
+    if (!stripe || !elements) {
+      toast.error("Stripe n'est pas prêt. Réessayez dans un instant.")
+      return
+    }
 
-    setIsLoading(true)
-    stripe
-      .confirmPayment({
-        elements,
-        confirmParams: {
-          return_url: `${SERVER_URL}/checkout/${orderId}/stripe-payment-success`,
-        },
-      })
-      .then(({ error }) => {
-        if (error.type === 'card_error' || error.type === 'validation_error') {
-          setErrorMessage(error.message)
-        } else {
-          setErrorMessage('An unknown error occurred')
-        }
-      })
-      .finally(() => setIsLoading(false))
+    setLoading(true)
+
+    // ✅ Confirme le paiement via Stripe
+    const result = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        // 🔁 Redirection après le paiement réussi
+        return_url: `${window.location.origin}/account/orders/${orderId}`,
+      },
+      redirect: 'if_required',
+    })
+
+    // ✅ Gestion des erreurs ou succès
+    if (result.error) {
+      toast.error(result.error.message || 'Échec du paiement. Réessayez.')
+    } else if (result.paymentIntent?.status === 'succeeded') {
+      toast.success('Paiement réussi ✅')
+      router.push(`/account/orders/${orderId}`)
+    }
+
+    setLoading(false)
   }
 
   return (
-    <form onSubmit={handleSubmit} className='space-y-4'>
-      <div className='text-xl'>Stripe Checkout</div>
-      {errorMessage && <div className='text-destructive'>{errorMessage}</div>}
+    <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+      {/* 🎯 Affiche le widget Stripe avec les champs dynamiques */}
       <PaymentElement />
-      <div>
-        <LinkAuthenticationElement onChange={(e) => setEmail(e.value.email)} />
-      </div>
-      <Button
-        className='w-full'
-        size='lg'
-        disabled={stripe == null || elements == null || isLoading}
-      >
-        {isLoading ? (
-          'Purchasing...'
-        ) : (
-          <div>
-            Purchase - <ProductPrice price={priceInCents / 100} plain />
-          </div>
-        )}
+
+      <Button type="submit" className="w-full mt-4" disabled={!stripe || loading}>
+        {loading ? 'Processing...' : `Pay €${(priceInCents / 100).toFixed(2)}`}
       </Button>
     </form>
   )
