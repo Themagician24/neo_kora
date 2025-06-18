@@ -46,4 +46,4 @@ const CheckoutPaymentPage = async (props: {
           )
 }
 
-export default CheckoutPaymentPage
+export default CheckoutPaymentPage;

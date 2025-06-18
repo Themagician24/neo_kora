@@ -86,7 +86,7 @@ export const createOrder = async (clientSideCart: Cart) => {
           id: paypalOrder.id,
           email_address: '',
           status: '',
-          pricePaid: '0',
+          pricePaid: '0', 
         }
         await order.save()
         return {

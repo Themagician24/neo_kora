@@ -2,7 +2,7 @@ import { Resend } from 'resend'
 import PurchaseReceiptEmail from './purchase-receipt'
 import { IOrder } from '@/lib/db/models/order.model'
 
-import { SENDER_EMAIL, SENDER_NAME } from '@/lib/constants'
+import {SENDER_EMAIL, SENDER_NAME } from '@/lib/constants'
 
 
 const resend = new Resend(process.env.RESEND_API_KEY as string)
