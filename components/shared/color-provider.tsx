@@ -8,12 +8,17 @@ export function ColorProvider({
   children,
   ...props
 }: React.ComponentProps<typeof NextThemesProvider>) {
+  // Récupérer le thème courant (ex: 'light', 'dark')
   const { theme } = useTheme()
-  const { color, updateCssVariables } = useColorStore(theme)
+
+  // Hook personnalisé qui gère la couleur en fonction du thème
+  const { color, updateCssVariables } = useColorStore()
+
+  // Met à jour les variables CSS quand le thème ou la couleur change
   React.useEffect(() => {
     updateCssVariables()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [theme, color])
+  }, [theme, color, updateCssVariables])
 
+  // Passer props de config du ThemeProvider (ex: defaultTheme)
   return <NextThemesProvider {...props}>{children}</NextThemesProvider>
 }

@@ -133,7 +133,7 @@ export default function OrderDetailsForm({
                     </PayPalScriptProvider>
                </div>
             )}
-            {!isPaid && paymentMethod ===  'stripe'  && clientSecret && (
+            {!isPaid && paymentMethod ===  'Stripe'  && clientSecret && (
               <Elements
                options={{ 
                 clientSecret,
