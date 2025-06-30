@@ -1,6 +1,17 @@
 
-import { CartSchema, OrderInputSchema, OrderItemSchema, ProductInputSchema, ShippingAddressSchema, UserInputSchema, UserSignInSchema, UserSignUpSchema } from "@/lib/validator";
+import { CartSchema, OrderInputSchema, OrderItemSchema, ProductInputSchema, ReviewInputSchema, ShippingAddressSchema, UserInputSchema, UserSignInSchema, UserSignUpSchema } from "@/lib/validator";
 import { z } from "zod";
+
+export type IReviewInput = z.infer<typeof ReviewInputSchema>
+
+export type IReviewDetails = IReviewInput & {
+  _id: string
+  createdAt: string
+  user: {
+    name: string
+  }
+}
+
 
 // Définition du type TypeScript à partir du schéma de validation d'un produit
 export type IProductInput = z.infer<typeof ProductInputSchema>
@@ -36,6 +47,8 @@ export type Data = {
     isPublished: boolean    // Indique si le carrousel est actif/publié
   }[]
 }
+
+
 
 // Type représentant un article de commande, basé sur le schéma Zod correspondant
 export type OrderItem = z.infer<typeof OrderItemSchema>
