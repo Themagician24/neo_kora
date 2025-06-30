@@ -49,6 +49,15 @@ export type Data = {
 }
 
 
+export type IOrderList = IOrderInput & {
+  _id: string
+  user: {
+    name: string
+    email: string
+  }
+  createdAt: Date
+}
+
 
 // Type représentant un article de commande, basé sur le schéma Zod correspondant
 export type OrderItem = z.infer<typeof OrderItemSchema>
