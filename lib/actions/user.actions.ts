@@ -1,13 +1,15 @@
 'use server'
 
-import { signIn, signOut } from "@/auth";
-import { IUserSignIn, IUSignUp } from "@/types";
+import { auth, signIn, signOut } from "@/auth";
+import { IUserName, IUserSignIn, IUSignUp } from "@/types";
 import { redirect } from "next/navigation";
 import { UserSignUpSchema } from "../validator";
 import { connectToDatabase } from "../db";
 import User from "../db/models/user.model";
 import bcrypt from "bcryptjs";
 import { formatError } from "../utils";
+
+import { revalidatePath } from "next/cache";
 
 
 export async function signInWithCredentials(user:IUserSignIn) {
@@ -45,4 +47,29 @@ export async function registerUser(userSignUp: IUSignUp) {
      } catch (error) {
           return { success: false, error: formatError(error) }
      }
+}
+
+
+
+// UPDATE
+
+export async function updateUserName(user: IUserName) {
+  try {
+    await connectToDatabase()
+   const session = await auth()
+   const currentUser = await User.findById(session?.user?.id)
+   if (!currentUser) {
+     throw new Error('User not found')
+   }
+   currentUser.name = user.name
+    const updatedUser = await currentUser.save()
+    revalidatePath('/admin/users')
+    return {
+      success: true,
+      message: 'User updated successfully',
+      data: JSON.parse(JSON.stringify(updatedUser)),
+    }
+  } catch (error) {
+    return { success: false, message: formatError(error) }
+  }
 }
