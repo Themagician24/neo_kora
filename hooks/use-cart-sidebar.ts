@@ -1,36 +1,27 @@
 import { usePathname } from 'next/navigation'
 import useDeviceType from './use-device-type'
 import useCartStore from './use-cart-store'
+import { i18n } from '@/i18n-config'
 
-/**
- * Vérifie si l'utilisateur n'est pas sur certaines pages spécifiques
- * où la sidebar du panier ne doit pas s'afficher.
- * @param path - le chemin d'URL actuel
- * @returns true si la sidebar peut être affichée, false sinon
- */
-const isNotInPaths = (s: string) => 
-  !/^\/?$|^\/cart$|^\/checkout$|^\/sign-in$|^\/sign-up$|^\/order(\/.*)?$|^\/account(\/.*)?$|^\/admin(\/.*)?$/.test(s)
+const locales = i18n.locales
+  .filter((locale) => locale.code !== 'en-US')
+  .map((locale) => locale.code)
 
-/**
- * Hook personnalisé pour déterminer si la sidebar du panier doit être affichée
- * Conditions :
- * - Il y a au moins un article dans le panier
- * - L'utilisateur est sur un appareil desktop
- * - Le chemin actuel n'est pas dans les pages exclues
- */
+const isNotInPaths = (s: string) => {
+  const localePattern = `/(?:${locales.join('|')})` // Match locales
+  const pathsPattern = `^(?:${localePattern})?(?:/$|/cart$|/checkout$|/sign-in$|/sign-up$|/order(?:/.*)?$|/account(?:/.*)?$|/admin(?:/.*)?$)?$`
+  return !new RegExp(pathsPattern).test(s)
+}
+
 function useCartSidebar() {
   const {
     cart: { items },
-  } = useCartStore() // Récupère les articles du panier depuis le store
+  } = useCartStore()
+  const deviceType = useDeviceType()
+  const currentPath = usePathname()
 
-  const deviceType = useDeviceType() // Détecte le type d'appareil
-  const currentPath = usePathname() // Chemin actuel de la page
-
-  // Affiche la sidebar si toutes les conditions sont réunies
   return (
-    items.length > 0 &&
-    deviceType === 'desktop' &&
-    isNotInPaths(currentPath)
+    items.length > 0 && deviceType === 'desktop' && isNotInPaths(currentPath)
   )
 }
 

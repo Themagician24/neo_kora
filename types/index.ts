@@ -1,9 +1,25 @@
-
-import { CartSchema, OrderInputSchema, OrderItemSchema, ProductInputSchema, ReviewInputSchema, ShippingAddressSchema, UserInputSchema, UserNameSchema, UserSignInSchema, UserSignUpSchema } from "@/lib/validator";
-import { z } from "zod";
+import {
+  CarouselSchema,
+  CartSchema,
+  DeliveryDateSchema,
+  OrderInputSchema,
+  OrderItemSchema,
+  PaymentMethodSchema,
+  ProductInputSchema,
+  ReviewInputSchema,
+  SettingInputSchema,
+  ShippingAddressSchema,
+  SiteCurrencySchema,
+  SiteLanguageSchema,
+  UserInputSchema,
+  UserNameSchema,
+  UserSignInSchema,
+  UserSignUpSchema,
+  WebPageInputSchema,
+} from '@/lib/validator'
+import { z } from 'zod'
 
 export type IReviewInput = z.infer<typeof ReviewInputSchema>
-
 export type IReviewDetails = IReviewInput & {
   _id: string
   createdAt: string
@@ -11,44 +27,32 @@ export type IReviewDetails = IReviewInput & {
     name: string
   }
 }
-
-
-// Définition du type TypeScript à partir du schéma de validation d'un produit
 export type IProductInput = z.infer<typeof ProductInputSchema>
 
-// Structure de données globale utilisée probablement pour de l'affichage côté client (ex: page d'accueil, produits, carrousel, etc.)
 export type Data = {
-  
-  // Liste des utilisateurs à afficher
+  settings: ISettingInput[]
+  webPages: IWebPageInput[]
   users: IUserInput[]
-
-  // Liste des produits à afficher
   products: IProductInput[]
-
-  // Liste des avis clients associés aux produits
   reviews: {
-    title: string     // Titre de l’avis
-    rating: number    // Note sur 5
-    comment: string   // Commentaire du client
+    title: string
+    rating: number
+    comment: string
   }[]
-
-  // Liens de navigation dans l'en-tête (menu)
   headerMenus: {
-    name: string      // Nom du lien (ex: "Shop", "Contact")
-    href: string      // URL vers laquelle pointe le lien
+    name: string
+    href: string
   }[]
-
-  // Carrousels d’images (ex: bannières promotionnelles)
   carousels: {
-    image: string           // URL de l’image affichée
-    url: string             // Lien cliquable associé à l’image
-    title: string           // Titre du carrousel (ex: "Promo du jour")
-    buttonCaption: string   // Texte du bouton (ex: "Acheter maintenant")
-    isPublished: boolean    // Indique si le carrousel est actif/publié
+    image: string
+    url: string
+    title: string
+    buttonCaption: string
+    isPublished: boolean
   }[]
 }
-
-
+// Order
+export type IOrderInput = z.infer<typeof OrderInputSchema>
 export type IOrderList = IOrderInput & {
   _id: string
   user: {
@@ -57,22 +61,26 @@ export type IOrderList = IOrderInput & {
   }
   createdAt: Date
 }
-
-
-// Type représentant un article de commande, basé sur le schéma Zod correspondant
 export type OrderItem = z.infer<typeof OrderItemSchema>
-
-// Type représentant un panier d'achat complet (liste d’articles + quantités)
 export type Cart = z.infer<typeof CartSchema>
-
-// Type représentant une adresse de livraison
 export type ShippingAddress = z.infer<typeof ShippingAddressSchema>
 
-
-//USERS
-export type IOrderInput = z.infer<typeof OrderInputSchema>
+// user
 export type IUserInput = z.infer<typeof UserInputSchema>
 export type IUserSignIn = z.infer<typeof UserSignInSchema>
-export type IUSignUp = z.infer<typeof UserSignUpSchema>
-export type ShippingAdress = z.infer<typeof ShippingAddressSchema>
+export type IUserSignUp = z.infer<typeof UserSignUpSchema>
 export type IUserName = z.infer<typeof UserNameSchema>
+
+// webpage
+export type IWebPageInput = z.infer<typeof WebPageInputSchema>
+
+// setting
+export type ICarousel = z.infer<typeof CarouselSchema>
+export type ISettingInput = z.infer<typeof SettingInputSchema>
+export type ClientSetting = ISettingInput & {
+  currency: string
+}
+export type SiteLanguage = z.infer<typeof SiteLanguageSchema>
+export type SiteCurrency = z.infer<typeof SiteCurrencySchema>
+export type PaymentMethod = z.infer<typeof PaymentMethodSchema>
+export type DeliveryDate = z.infer<typeof DeliveryDateSchema>

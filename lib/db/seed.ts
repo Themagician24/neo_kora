@@ -1,41 +1,48 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { connectToDatabase } from "."
-import data from "../data"
-import { loadEnvConfig } from "@next/env"
-import { cwd } from "process"
-import Product from "./models/product.model"
-import User from "./models/user.model"
-import Review from "@/lib/db/models/review.model"
-import Order from "@/lib/db/models/order.model"
-import { IOrderInput, OrderItem, ShippingAddress } from "@/types"
-import { calculateFutureDate, calculatePastDate, generateId, round2 } from "@/lib/utils"
-import { AVALILABLE_DELIVERY_DATES } from "@/lib/constants"
-
+import data from '@/lib/data'
+import { connectToDatabase } from '.'
+import User from './models/user.model'
+import Product from './models/product.model'
+import Review from './models/review.model'
+import { cwd } from 'process'
+import { loadEnvConfig } from '@next/env'
+import Order from './models/order.model'
+import {
+  calculateFutureDate,
+  calculatePastDate,
+  generateId,
+  round2,
+} from '../utils'
+import WebPage from './models/web-page.model'
+import Setting from './models/setting.model'
+import { OrderItem, IOrderInput, ShippingAddress } from '@/types'
 
 loadEnvConfig(cwd())
 
 const main = async () => {
-     try {
-          const { products, users, reviews } = data
-          await connectToDatabase(process.env.MONGODB_URI)
+  try {
+    const { users, products, reviews, webPages, settings } = data
+    await connectToDatabase(process.env.MONGODB_URI)
 
-          await User.deleteMany()
-          const createUsers = await User.insertMany(users)
-          console.log({
-               createUsers,
-               message: 'Utilisateurs enregistres avec success dans la base de donnees',
-          })
+    await User.deleteMany()
+    const createdUser = await User.insertMany(users)
 
-          await Product.deleteMany()
-          const createProducts = await Product.insertMany(products)
+    await Setting.deleteMany()
+    const createdSetting = await Setting.insertMany(settings)
 
+    await WebPage.deleteMany()
+    await WebPage.insertMany(webPages)
 
-          
+    await Product.deleteMany()
+    const createdProducts = await Product.insertMany(
+      products.map((x) => ({ ...x, _id: undefined }))
+    )
+
     await Review.deleteMany()
     const rws = []
-    for (let i = 0; i < createProducts.length; i++) {
+    for (let i = 0; i < createdProducts.length; i++) {
       let x = 0
-      const { ratingDistribution } = createProducts[i]
+      const { ratingDistribution } = createdProducts[i]
       for (let j = 0; j < ratingDistribution.length; j++) {
         for (let k = 0; k < ratingDistribution[j].count; k++) {
           x++
@@ -44,42 +51,41 @@ const main = async () => {
               x % reviews.filter((x) => x.rating === j + 1).length
             ],
             isVerifiedPurchase: true,
-            product: createProducts[i]._id,
-            user: createUsers[x % createUsers.length]._id,
+            product: createdProducts[i]._id,
+            user: createdUser[x % createdUser.length]._id,
             updatedAt: Date.now(),
             createdAt: Date.now(),
           })
         }
       }
     }
-
     const createdReviews = await Review.insertMany(rws)
 
-      await Order.deleteMany()
-      const orders = []
-      for (let i = 0; i < 200; i++) {
-        orders.push(
-          await generateOrder(
-            i,
-            createUsers.map((x) => x._id),
-            createProducts.map((x) => x._id)
-          )
+    await Order.deleteMany()
+    const orders = []
+    for (let i = 0; i < 200; i++) {
+      orders.push(
+        await generateOrder(
+          i,
+          createdUser.map((x) => x._id),
+          createdProducts.map((x) => x._id)
         )
-      }
-      const createdOrders = await Order.insertMany(orders)
-
-          console.log({
-               createProducts,
-               createdReviews,
-               createdOrders,
-               createUsers,
-               message: 'Produits enregistres avec success dans la base de donnees',
-          })
-          process.exit(0)
-     } catch (error) {
-          console.error(error)
-          throw new Error('Echec d/ajout de produits dans la base de donnees')
-     }
+      )
+    }
+    const createdOrders = await Order.insertMany(orders)
+    console.log({
+      createdUser,
+      createdProducts,
+      createdReviews,
+      createdOrders,
+      createdSetting,
+      message: 'Seeded database successfully',
+    })
+    process.exit(0)
+  } catch (error) {
+    console.error(error)
+    throw new Error('Failed to seed database')
+  }
 }
 
 const generateOrder = async (
@@ -173,15 +179,15 @@ export const calcDeliveryDateAndPriceForSeed = ({
   items: OrderItem[]
   shippingAddress?: ShippingAddress
 }) => {
-  
+  const { availableDeliveryDates } = data.settings[0]
   const itemsPrice = round2(
     items.reduce((acc, item) => acc + item.price * item.quantity, 0)
   )
 
   const deliveryDate =
-    AVALILABLE_DELIVERY_DATES[
+    availableDeliveryDates[
       deliveryDateIndex === undefined
-        ? AVALILABLE_DELIVERY_DATES.length - 1
+        ? availableDeliveryDates.length - 1
         : deliveryDateIndex
     ]
 
@@ -194,10 +200,10 @@ export const calcDeliveryDateAndPriceForSeed = ({
       (taxPrice ? round2(taxPrice) : 0)
   )
   return {
-    AVALILABLE_DELIVERY_DATES,
+    availableDeliveryDates,
     deliveryDateIndex:
       deliveryDateIndex === undefined
-        ? AVALILABLE_DELIVERY_DATES.length - 1
+        ? availableDeliveryDates.length - 1
         : deliveryDateIndex,
     itemsPrice,
     shippingPrice,
