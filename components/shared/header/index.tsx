@@ -2,10 +2,11 @@
     import Image from 'next/image'
     import Link from 'next/link'
     import Menu from './menu'
-    import { Button } from '@/components/ui/button'
+   
     import { MenuIcon } from 'lucide-react'
     import data from '@/lib/data'
     import Search from './search'
+import { Button } from '@/src/components/ui/button'
 
    export default function Header() {
      return (

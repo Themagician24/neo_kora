@@ -3,15 +3,11 @@
    import * as React from 'react'
    import Image from 'next/image'
    import Autoplay from 'embla-carousel-autoplay'
-   import {
-     Carousel,
-     CarouselContent,
-     CarouselItem,
-     CarouselNext,
-     CarouselPrevious,
-   } from '@/components/ui/carousel'
+
    import Link from 'next/link'
-   import { Button } from '@/components/ui/button'
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/src/components/ui/carousel'
+import { Button } from '@/src/components/ui/button'
+  
 
    export function HomeCarousel({
      items,

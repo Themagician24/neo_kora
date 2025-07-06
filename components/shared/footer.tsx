@@ -4,7 +4,8 @@
  
     import Link from 'next/link'
     import { APP_NAME } from '@/lib/constants'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/src/components/ui/button'
+
 
     export default function Footer() {
       return (
