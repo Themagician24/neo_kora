@@ -1,14 +1,7 @@
-import { Button } from "@/components/ui/button";
 
+   import data from '@/lib/data'
+import { HomeCarousel } from '../components/shared/home/home-carousel'
 
-export default function Home() {
-  return (
-    <div>
-      <Button className="bg-yellow-500 text-white hover:bg-blue-600">
-        Click Me
-
-      </Button>
-    </div>
-  )
-    
-}
+   export default async function Page() {
+     return <HomeCarousel items={data.carousels} />
+   }
